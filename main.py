@@ -34,7 +34,7 @@ class AudioClip:
 
 @click.command()
 @click.option("--number-of-seqs", "-n",
-              type=int,
+              type=click.IntRange(1, 1000, clamp=True),
               default=1,
               show_default=True,
               help="Number of sequences to generate")
@@ -93,14 +93,10 @@ class AudioClip:
               help="Normalize durations of candidates so that they fall within the same range as the source "
                    "durations, thus making for better matches with the source event durations")
 @click.option("--min-duration",
-              type=int,
-              minimum=1,
-              maximum=SPLIT_THRESHOLD_IN_SECONDS,
+              type=click.IntRange(1, SPLIT_THRESHOLD_IN_SECONDS, clamp=True),
               help="Minimum duration of extracted audio clips in seconds")
 @click.option("--max-duration",
-              type=int,
-              minimum=2,
-              maximum=SPLIT_THRESHOLD_IN_SECONDS * 2,
+              type=click.IntRange(2, SPLIT_THRESHOLD_IN_SECONDS * 2, clamp=True),
               help="Maximum duration of extracted audio clips in seconds")
 @click.option("--onset-method",
               type=click.Choice(
@@ -116,6 +112,8 @@ class AudioClip:
                       "specflux"
                   ],
                   case_sensitive=False),
+              default="specflux",
+              show_default=True,
               help="Aubio onset detection method")
 @click.option("--file-selection-method",
               type=click.Choice(
@@ -125,7 +123,10 @@ class AudioClip:
                   ],
                   case_sensitive=False),
               help="Method for selecting source audio files")
-def beat_shuffler(source_dir: str, strategy: str, seed: int = -1):
+def beat_shuffler(number_of_seqs: int, generation_depth: int, substitution_dir: str, output: str, source_dir: str,
+                  seed: int, trim: bool, one_shot_mode: str, strategy: str, recurse_sub_dirs: bool,
+                  normalize_durations: bool, min_duration: int, max_duration: int, onset_method: str,
+                  file_selection_method: str):
     click.echo(f"Iterating all audio files in folder {source_dir} with seed {seed}")
     click.echo(f"You chose {strategy}")
     if seed != -1:
@@ -140,19 +141,32 @@ def beat_shuffler(source_dir: str, strategy: str, seed: int = -1):
     selected_file = random.choice(source_files)
     click.echo(f"Selected file {selected_file}")
 
-    clip = get_audio_clip(str(selected_file), 4, 4)
+    # collect next source file
+    # collect substitution clips in the amount generation_depth
+    clip = get_audio_clip(str(selected_file), random.random() * .9, random.randint(min_duration, max_duration), onset_method)
     click.echo(f"Got clip with {len(clip.events)} events")
 
 
-def get_audio_clip(filename: str, start: int, duration: int):
+def get_audio_clip(filename: str,
+                   start_offset_fraction: float,
+                   duration_secs: int,
+                   aubio_method: str = "hfc") -> AudioClip:
     win_s = 512  # fft size
     hop_s = win_s // 2  # hop size
     onsets = []
     all_samples = []
     samples_read = 0
     with AudioFile(filename) as f:
-        o = aubio.onset("hfc", samplerate=f.samplerate, hop_size=hop_s, buf_size=win_s)
-        while True:
+        clip_size_fraction = duration_secs / f.duration
+        start_offset_fraction *= (.975 - clip_size_fraction)
+        start_offset = 0
+        if clip_size_fraction < .9:
+            start_offset = int(f.duration * start_offset_fraction)
+        o = aubio.onset(aubio_method, samplerate=f.samplerate, hop_size=hop_s, buf_size=win_s)
+        start_offset_samples = int(start_offset * f.samplerate)
+        num_samples = int(duration_secs * f.samplerate)
+        f.seek(start_offset_samples)
+        while samples_read < num_samples:
             samples = f.read(hop_s)
             samples_read += len(samples[0, :])
             # we only keep left channel
