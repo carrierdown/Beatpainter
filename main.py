@@ -8,20 +8,11 @@ from dataclasses import dataclass
 from typing import List
 from pedalboard_native.io import AudioFile
 
+from audio_event import AudioEvent
 
 # Files longer than this will have a random clip extracted from it
 SPLIT_THRESHOLD_IN_SECONDS = 15
 ONE_SHOT_SLICE_THRESHOLD_SECONDS = 3
-
-
-@dataclass
-class AudioEvent:
-    start: int
-    duration: int
-    pitch: int
-    audio_data: List[float]
-    rms: float
-    should_fade_in: bool = True
 
 
 @dataclass
@@ -80,6 +71,8 @@ class AudioClip:
                       "ShuffleByPitch"
                   ],
                   case_sensitive=False),
+              default="ShuffleByDuration",
+              show_default=True,
               help="Strategy for generating audio sequences"
               )
 @click.option("--recurse-sub-dirs",
@@ -144,7 +137,6 @@ def beat_shuffler(number_of_seqs: int, generation_depth: int, substitution_dir: 
         click.echo(f"Got clip with {len(source_clip.events)} events")
         substitution_clips = get_substitution_clips(substitution_files, min_duration, max_duration, one_shot_mode)
         generate_sequence(strategy, source_clip, substitution_clips, min_duration, max_duration, onset_method)
-        # generate_sequence(source_files, generation_depth, min_duration, max_duration, onset_method)
 
 
 def generate_sequence(strategy: str, source_clip: AudioClip, substitution_clips: list[AudioClip], min_duration: int,
@@ -153,7 +145,9 @@ def generate_sequence(strategy: str, source_clip: AudioClip, substitution_clips:
         return shuffle_by_duration(source_clip, substitution_clips, min_duration, max_duration, onset_method)
 
 
-def shuffle_by_duration(source_clip: AudioClip, substitution_clips: list[AudioClip], min_duration, max_duration, onset_method, normalize_durations):
+def shuffle_by_duration(source_clip: AudioClip,
+                        substitution_clips: list[AudioClip],
+                        normalize_durations) -> list[AudioEvent]:
     result = []
     if not (len(source_clip.events) > 0 and len(substitution_clips) > 0 and len(substitution_clips[0].events) > 0):
         return result
@@ -175,10 +169,8 @@ def shuffle_by_duration(source_clip: AudioClip, substitution_clips: list[AudioCl
         new_event.start = old_event.start
         new_event.duration = old_event.duration
 
-        # if the new event is shorter than the old event, apply a fade out
-        if substitution_events[closest_index].duration < old_event.duration:
-            AudioUtils.apply_audio_data_fade_out(new_event)
         result.append(new_event)
+    return result
 
 
 def get_substitution_clips(substitution_files, min_duration, max_duration, one_shot_mode) -> list[AudioClip]:

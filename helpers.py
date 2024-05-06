@@ -23,6 +23,5 @@ def normalize(source_values: list[int], target_min: int, target_max: int) -> lis
     normalized = np.array(source_values).astype(float)
     normalized -= source_min
     normalized *= rescale_factor
-    normalized += target_min
-    normalized = np.floor(normalized).astype(int)
+    normalized = np.floor(normalized + target_min).astype(int)
     return normalized.tolist()
