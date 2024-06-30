@@ -4,20 +4,15 @@ import click
 import random
 import aubio
 import helpers
-from dataclasses import dataclass
 from typing import List
 from pedalboard_native.io import AudioFile
 
-from audio_event import AudioEvent
+from AudioEvent import AudioEvent
+from AudioClip import AudioClip
 
 # Files longer than this will have a random clip extracted from it
 SPLIT_THRESHOLD_IN_SECONDS = 15
 ONE_SHOT_SLICE_THRESHOLD_SECONDS = 3
-
-
-@dataclass
-class AudioClip:
-    events: List[AudioEvent]
 
 
 @click.command()
@@ -126,7 +121,10 @@ def beat_shuffler(number_of_seqs: int, generation_depth: int, substitution_dir: 
     substitution_path = pathlib.Path(substitution_dir) if substitution_dir else source_path
     substitution_files = get_audio_files(substitution_path, recurse_sub_dirs)
     if not source_files:
-        click.echo("No audio files were found in the supplied directory")
+        click.echo("No audio files were found in the supplied source directory")
+        exit(0)
+    if not substitution_files:
+        click.echo("No audio files were found in the supplied substitution directory")
         exit(0)
 
     for i in range(number_of_seqs):
@@ -136,13 +134,17 @@ def beat_shuffler(number_of_seqs: int, generation_depth: int, substitution_dir: 
                                      random.randint(min_duration, max_duration), onset_method)
         click.echo(f"Got clip with {len(source_clip.events)} events")
         substitution_clips = get_substitution_clips(substitution_files, min_duration, max_duration, one_shot_mode)
-        generate_sequence(strategy, source_clip, substitution_clips, min_duration, max_duration, onset_method)
+        result_events = generate_sequence(strategy, source_clip, substitution_clips, min_duration, max_duration,
+                                          onset_method)
+        result = AudioClip(result_events)
+        # write result_clip to disk
 
 
 def generate_sequence(strategy: str, source_clip: AudioClip, substitution_clips: list[AudioClip], min_duration: int,
-                      max_duration: int, onset_method: str):
+                      max_duration: int, onset_method: str) -> list[AudioEvent]:
     if strategy == "ShuffleByDuration":
         return shuffle_by_duration(source_clip, substitution_clips, min_duration, max_duration, onset_method)
+    return []
 
 
 def shuffle_by_duration(source_clip: AudioClip,
@@ -186,35 +188,41 @@ def get_audio_clip(filename: str,
                    aubio_method: str = "hfc") -> AudioClip:
     win_s = 512  # fft size
     hop_s = win_s // 2  # hop size
-    onsets = []
+    onsets = []  # contains sample indexes to all onsets in the current clip, including start and end points
     all_samples = []
     samples_read = 0
-    with AudioFile(filename) as f:
-        clip_size_fraction = duration_secs / f.duration
+    with AudioFile(filename) as file:
+        clip_size_fraction = duration_secs / file.duration
         start_offset_fraction *= (.975 - clip_size_fraction)
         start_offset = 0
         if clip_size_fraction < .9:
-            start_offset = int(f.duration * start_offset_fraction)
-        o = aubio.onset(aubio_method, samplerate=f.samplerate, hop_size=hop_s, buf_size=win_s)
-        start_offset_samples = int(start_offset * f.samplerate)
-        num_samples = int(duration_secs * f.samplerate)
-        f.seek(start_offset_samples)
+            start_offset = int(file.duration * start_offset_fraction)
+        onset_detector = aubio.onset(aubio_method, samplerate=file.samplerate, hop_size=hop_s, buf_size=win_s)
+        start_offset_samples = int(start_offset * file.samplerate)
+        num_samples = int(duration_secs * file.samplerate)
+        file.seek(start_offset_samples)
         while samples_read < num_samples:
-            samples = f.read(hop_s)
+            samples = file.read(hop_s)
             samples_read += len(samples[0, :])
             # we only keep left channel
             all_samples.extend(samples[0, :])
             if len(samples[0, :]) < hop_s:
                 break
-            if o(samples[0, :]):
-                onsets.append(o.get_last())
-    onsets.insert(0, 0)
-    onsets.append(samples_read)
+            if onset_detector(samples[0, :]):
+                onsets.append(onset_detector.get_last())
+    onsets.insert(0, 0)  # First onset always starts at 0
+    onsets.append(samples_read)  # Last onset = end of clip
     events: List[AudioEvent] = list()
     for ix, onset in enumerate(onsets[0:-1]):
         duration = onsets[ix + 1] - onset
         events.append(AudioEvent(onset, duration, 0, all_samples[onset:onset + duration], 0, True))
     return AudioClip(events)
+
+
+def write_audio_clip(filename: str, clip: AudioClip):
+    with AudioFile(filename, "w", samplerate=clip.sample_rate, num_channels=clip.num_channels) as f:
+        for event in clip.events:
+            f.write(event.audio_data)
 
 
 def get_audio_files(path, recurse):

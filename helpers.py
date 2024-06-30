@@ -17,11 +17,8 @@ def get_closest_index(number_list: list[int], target: int) -> int:
 def normalize(source_values: list[int], target_min: int, target_max: int) -> list[int]:
     if target_min > target_max:
         target_min, target_max = target_max, target_min
-    source_min = min(duration for duration in source_values)
-    source_max = max(duration for duration in source_values)
+    source_min = min(source_values)
+    source_max = max(source_values)
     rescale_factor = (target_max - target_min) / (source_max - source_min)
-    normalized = np.array(source_values).astype(float)
-    normalized -= source_min
-    normalized *= rescale_factor
-    normalized = np.floor(normalized + target_min).astype(int)
-    return normalized.tolist()
+    normalized = np.array(source_values).astype(float) - source_min
+    return np.floor((normalized * rescale_factor) + target_min).astype(int).tolist()
