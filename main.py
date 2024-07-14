@@ -7,7 +7,6 @@ import numpy as np
 import helpers
 from typing import List
 from pedalboard_native.io import AudioFile
-from numpy.random import Generator
 
 from AudioEvent import AudioEvent
 from AudioClip import AudioClip
@@ -28,7 +27,7 @@ ONE_SHOT_SLICE_THRESHOLD_SECONDS = 3
               default=1,
               show_default=True,
               help="Number of sequences to involve in the generation of a single loop")
-@click.option("--substitution-dir", "-s",
+@click.option("--substitution-dir", "-sub",
               type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True, path_type=pathlib.Path),
               default=".",
               show_default=True,
@@ -126,7 +125,7 @@ def beat_shuffler(number_of_seqs: int,
                   onset_method: str,
                   file_selection_method: str) -> None:
     click.echo(f"Iterating all audio files in folder {source_dir} with seed {seed}")
-    click.echo(f"You chose {strategy}")
+    click.echo(f"You chose strategy {strategy}")
     rng = np.random.default_rng() if seed == -1 else np.random.default_rng(seed)
     source_path = pathlib.Path(source_dir)
     source_files = get_audio_files(source_path, False)
@@ -154,7 +153,6 @@ def beat_shuffler(number_of_seqs: int,
         result_events = generate_sequence(strategy, source_clip, substitution_clips, options)
         result = AudioClip(result_events)
         write_audio_clip(str(pathlib.Path(output, f"output-{i}")), result)
-        # write result_clip to disk
 
 
 def generate_sequence(strategy: str,
@@ -249,7 +247,7 @@ def get_audio_clip(filename: str,
 
 
 def write_audio_clip(filename: str, clip: AudioClip):
-    with AudioFile(filename, "w", samplerate=clip.sample_rate, num_channels=clip.num_channels) as f:
+    with AudioFile(f"{filename}.wav", "w", samplerate=clip.sample_rate, num_channels=clip.num_channels) as f:
         for event in clip.events:
             f.write(event.audio_data)
 
