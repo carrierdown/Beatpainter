@@ -1,4 +1,3 @@
-import copy
 import pathlib
 import click
 import aubio
@@ -8,8 +7,10 @@ import helpers
 from typing import List
 from pedalboard_native.io import AudioFile
 
+import strategies
 from AudioEvent import AudioEvent
 from AudioClip import AudioClip
+from FileChooser import FileChooser
 
 # Files longer than this will have a random clip extracted from it
 SPLIT_THRESHOLD_IN_SECONDS = 15
@@ -102,6 +103,8 @@ ONE_SHOT_SLICE_THRESHOLD_SECONDS = 3
               show_default=True,
               help="Aubio onset detection method")
 @click.option("--file-selection-method",
+              default="random",
+              show_default=True,
               type=click.Choice(
                   [
                       "random",
@@ -125,12 +128,14 @@ def beat_shuffler(number_of_seqs: int,
                   onset_method: str,
                   file_selection_method: str) -> None:
     click.echo(f"Iterating all audio files in folder {source_dir} with seed {seed}")
-    click.echo(f"You chose strategy {strategy}")
+    click.echo(f"Using strategy {strategy}")
     rng = np.random.default_rng() if seed == -1 else np.random.default_rng(seed)
+    file_chooser = FileChooser(rng, file_selection_method)
     source_path = pathlib.Path(source_dir)
     source_files = get_audio_files(source_path, False)
     substitution_path = pathlib.Path(substitution_dir) if substitution_dir else source_path
     substitution_files = get_audio_files(substitution_path, recurse_sub_dirs)
+
     if not source_files:
         click.echo("No audio files were found in the supplied source directory")
         exit(0)
@@ -143,13 +148,13 @@ def beat_shuffler(number_of_seqs: int,
     }
 
     for i in range(number_of_seqs):
-        selected_file = np.random.choice(source_files)
+        selected_file = str(file_chooser.choose(source_files))
         click.echo(f"Selected file {selected_file}")
-        source_clip = get_audio_clip(str(selected_file), rng.random(),
-                                     rng.integers(min_duration, high=max_duration), onset_method)
+        source_clip = get_audio_clip(selected_file, rng.random(),
+                                     rng.integers(min_duration, high=max_duration), trim, onset_method)
         click.echo(f"Got clip with {len(source_clip.events)} events")
         substitution_clips = get_substitution_clips(substitution_files, generation_depth, min_duration, max_duration,
-                                                    one_shot_mode, rng, file_selection_method)
+                                                    one_shot_mode, file_chooser, trim)
         result_events = generate_sequence(strategy, source_clip, substitution_clips, options)
         result = AudioClip(result_events)
         write_audio_clip(str(pathlib.Path(output, f"output-{i}")), result)
@@ -160,36 +165,9 @@ def generate_sequence(strategy: str,
                       substitution_clips: list[AudioClip],
                       options: dict) -> list[AudioEvent]:
     if strategy == "ShuffleByDuration":
-        return shuffle_by_duration(source_clip, substitution_clips, normalize_durations=options["normalize_durations"])
+        return strategies.shuffle_by_duration(source_clip, substitution_clips,
+                                              normalize_durations=options["normalize_durations"])
     return []
-
-
-def shuffle_by_duration(source_clip: AudioClip,
-                        substitution_clips: list[AudioClip],
-                        normalize_durations) -> list[AudioEvent]:
-    result = []
-    if not (len(source_clip.events) > 0 and len(substitution_clips) > 0 and len(substitution_clips[0].events) > 0):
-        return result
-
-    substitution_events = [event for substitution_clip in substitution_clips for event in substitution_clip.events]
-    candidates = [event.duration for event in substitution_events]
-
-    if normalize_durations:
-        processed_candidate_durations = helpers.normalize(candidates,
-                                                          min(event.duration for event in source_clip.events),
-                                                          max(event.duration for event in source_clip.events))
-    else:
-        processed_candidate_durations = candidates
-
-    for i in range(len(source_clip.events)):
-        closest_index = helpers.get_closest_index(processed_candidate_durations, source_clip.events[i].duration)
-        old_event = source_clip.events[i]
-        new_event = copy.copy(substitution_events[closest_index])
-        new_event.start = old_event.start
-        new_event.duration = old_event.duration
-
-        result.append(new_event)
-    return result
 
 
 def get_substitution_clips(substitution_files,
@@ -197,19 +175,20 @@ def get_substitution_clips(substitution_files,
                            min_duration: int,
                            max_duration: int,
                            one_shot_mode: str,
-                           rng: np.random.Generator,
-                           file_selection_method: str) -> list[AudioClip]:
+                           file_chooser: FileChooser,
+                           trim: bool) -> list[AudioClip]:
     clips = list()
     for _ in range(generation_depth):
-        file = str(rng.choice(substitution_files))
-        duration = rng.integers(min_duration, high=max_duration)
-        clips.append(get_audio_clip(file, rng.random() * .9, duration))
+        file = str(file_chooser.choose(substitution_files))
+        duration = file_chooser.rng.integers(min_duration, high=max_duration)
+        clips.append(get_audio_clip(file, file_chooser.rng.random(), duration, trim))
     return clips
 
 
 def get_audio_clip(filename: str,
                    start_offset_fraction: float,
                    duration_secs: int,
+                   trim: bool,
                    aubio_method: str = "hfc") -> AudioClip:
     win_s = 512  # fft size
     hop_s = win_s // 2  # hop size
@@ -217,9 +196,12 @@ def get_audio_clip(filename: str,
     all_samples = []
     samples_read = 0
     with AudioFile(filename) as file:
-        duration_secs = clamp(duration_secs, 0, file.duration)
+        duration_secs = helpers.clamp(duration_secs, 0, file.duration)
+        if file.duration < SPLIT_THRESHOLD_IN_SECONDS:
+            duration_secs = file.duration
+            trim = False
         samplerate = file.samplerate
-        start_offset = clamp(
+        start_offset = helpers.clamp(
             int(file.duration * start_offset_fraction),
             0,
             file.duration - duration_secs
@@ -243,6 +225,8 @@ def get_audio_clip(filename: str,
     for ix, onset in enumerate(onsets[0:-1]):
         duration = onsets[ix + 1] - onset
         events.append(AudioEvent(onset, duration, 0, all_samples[onset:onset + duration], 0, True))
+    if trim:
+        events = events[1:-1]
     return AudioClip(events=events, sample_rate=samplerate)
 
 
@@ -250,14 +234,6 @@ def write_audio_clip(filename: str, clip: AudioClip):
     with AudioFile(f"{filename}.wav", "w", samplerate=clip.sample_rate, num_channels=clip.num_channels) as f:
         for event in clip.events:
             f.write(event.audio_data)
-
-
-def clamp(val, min_val, max_val):
-    if val < min_val:
-        return min_val
-    if val > max_val:
-        return max_val
-    return val
 
 
 def get_audio_files(path, recurse):

@@ -22,3 +22,11 @@ def normalize(source_values: list[int], target_min: int, target_max: int) -> lis
     rescale_factor = (target_max - target_min) / (source_max - source_min)
     normalized = np.array(source_values).astype(float) - source_min
     return np.floor((normalized * rescale_factor) + target_min).astype(int).tolist()
+
+
+def clamp(val, min_val, max_val):
+    if val < min_val:
+        return min_val
+    if val > max_val:
+        return max_val
+    return val
