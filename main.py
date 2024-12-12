@@ -20,9 +20,6 @@ SHORTEST_ONE_SHOT = 4410
 ONE_SHOT_MAX_SAMPLE_SIZE = 44100 # 1s
 MAX_NUMBER_OF_SLICES = 100 # Max number of slices to extract from a single one shot
 
-# TODO: Maybe rename source-dir and substitution-dir to source-a and source-b, to make it easier to have commands using
-#  these in different ways,
-
 
 @click.command()
 @click.option("--number-of-seqs", "-n",
@@ -224,14 +221,13 @@ def get_substitution_clips(substitution_files,
                 filename: str = str(file_chooser.choose(substitution_files))
                 with AudioFile(filename) as file_to_slice:
                     file_length_samples = file_to_slice.frames
-                # Long one shot mode is only enabled for files longer than a certain treshold
+                # Long one shot mode is only enabled for files longer than a certain threshold
                 if file_length_samples > ONE_SHOT_SLICE_THRESHOLD_SAMPLES:
                     num_slices = len(source_clip.events)
                     slice_length = int(math.floor(file_length_samples / num_slices))
                     if slice_length < SHORTEST_ONE_SHOT:
                         slice_length = SHORTEST_ONE_SHOT
                         num_slices = int(math.floor(file_length_samples / SHORTEST_ONE_SHOT))
-                    # TODO: need to limit num slices according to cur_event_ix
                     num_slices = min(len(source_clip.events) - cur_event_ix, num_slices)
                     events.extend(get_slices(filename, cur_event_ix, num_slices, slice_length, source_clip))
                     cur_event_ix += len(events)
