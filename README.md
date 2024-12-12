@@ -1,5 +1,17 @@
 # BeatPainter
 
+## Example command
+
+```
+python3 main.py --source-dir <dir>\ 
+    --substitution-dir <dir>\
+    --recurse-sub-dirs\
+    --seed 12341\
+    --output <dir>
+```
+
+## Usage
+
 ```
 Usage: main.py [OPTIONS]
 
@@ -7,9 +19,11 @@ Options:
   -n, --number-of-seqs INTEGER RANGE
                                   Number of sequences to generate  [default:
                                   1; 1<=x<=1000]
-  -d, --generation-depth INTEGER  Number of sequences to involve in the
-                                  generation of a single loop  [default: 1]
-  -s, --substitution-dir DIRECTORY
+  -d, --generation-depth INTEGER RANGE
+                                  Number of sequences to involve in the
+                                  generation of a single loop  [default: 1;
+                                  1<=x<=10]
+  -sub, --substitution-dir DIRECTORY
                                   Path to directory containing audio files
                                   used to produce new loops based on the
                                   source audio. If left unspecified, the
@@ -49,5 +63,11 @@ Options:
                                   specflux]
   --file-selection-method [random|sequential]
                                   Method for selecting source audio files
+                                  [default: random]
+  -c, --chunk-sizes INTEGER RANGE
+                                  One or more values specifying how many
+                                  events should be chunked together before
+                                  processing occurs. Only used for interleave
+                                  currently.  [1<=x<=15]
   --help                          Show this message and exit.
 ```
