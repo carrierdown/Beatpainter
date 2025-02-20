@@ -11,6 +11,7 @@ import strategies
 from AudioEvent import AudioEvent
 from AudioClip import AudioClip
 from FileChooser import FileChooser
+from Logger import Logger
 
 # Files longer than this will have a random clip extracted from it
 SPLIT_THRESHOLD_IN_SECONDS = 15
@@ -128,6 +129,16 @@ MAX_NUMBER_OF_SLICES = 100 # Max number of slices to extract from a single one s
               type=str,
               help="Prefix to add to output files, in addition to the sequence number",
               default="output")
+@click.option('--log-level', '-l',
+              type=click.Choice(
+                  [
+                      "NONE",
+                      "INFO",
+                      "WARNING",
+                      "ERROR"
+                  ],
+                  case_sensitive=False),
+              default="ERROR")
 def beat_shuffler(number_of_seqs: int,
                   generation_depth: int,
                   substitution_dir: str,
@@ -145,9 +156,11 @@ def beat_shuffler(number_of_seqs: int,
                   file_selection_method: str,
                   # event_selection_method: str,
                   chunk_sizes: List[int],
-                  output_prefix: str) -> None:
+                  output_prefix: str,
+                  log_level: str) -> None:
+    logger = Logger(-1 if log_level == "NONE" else 0 if log_level == "INFO" else 1 if log_level == "WARNING" else 2)
     click.echo(f"Iterating all audio files in folder {source_dir} with seed {seed}")
-    click.echo(f"Using strategy {strategy}")
+    logger.log(f"Using strategy {strategy}")
     rng = np.random.default_rng() if seed == -1 else np.random.default_rng(seed)
     file_chooser = FileChooser(rng, file_selection_method) 
     source_path = pathlib.Path(source_dir)
@@ -155,7 +168,7 @@ def beat_shuffler(number_of_seqs: int,
     substitution_path = pathlib.Path(substitution_dir) if substitution_dir else source_path
     substitution_files = get_audio_files(substitution_path, recurse_sub_dirs)
 
-    click.echo(f"Got the following for chunk {chunk_sizes}")
+    logger.log(f"Got the following for chunk {chunk_sizes}")
 
     if not source_files:
         click.echo("No audio files were found in the supplied source directory")

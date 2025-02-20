@@ -1,20 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="b59f4b36-95a8-4e66-a144-6b9dc52f4b63" name="Changes" comment="" />
+    <list default="true" id="b59f4b36-95a8-4e66-a144-6b9dc52f4b63" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.run/Run_BeatPainter.run.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Logger.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/io_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/BeatPainter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/BeatPainter.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;carrierdown&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/carrierdown/Beatpainter.git&quot;,
+    &quot;accountId&quot;: &quot;1bdc8dc7-f4c2-48a4-8cc9-667a9cf8ff71&quot;
+  }
+}</component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2fTHH9YHXDE4XpgoymynnNXEvbw" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.Run_BeatPainte-Help.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Run_BeatPainter.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/knutaru/Repos/hobby/BeatPainter&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Python.Run_BeatPainter">
+    <configuration name="Run_BeatPainte-Help" type="PythonConfigurationType" factoryName="Python">
+      <module name="rider.module" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.9 (BeatPainter)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="main.py" />
+      <option name="PARAMETERS" value="--help" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.Run_BeatPainter" />
+      <item itemvalue="Python.Run_BeatPainte-Help" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -31,7 +103,57 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1713818056598</updated>
+      <workItem from="1725520882062" duration="3346000" />
+      <workItem from="1726598179285" duration="1000" />
+      <workItem from="1730238789208" duration="453000" />
+      <workItem from="1730239249919" duration="5000" />
+      <workItem from="1730239430746" duration="2446000" />
+      <workItem from="1730364036082" duration="930000" />
+      <workItem from="1730365685038" duration="9976000" />
+      <workItem from="1730668122507" duration="5778000" />
+      <workItem from="1732139780198" duration="1950000" />
+      <workItem from="1733260158377" duration="3602000" />
+      <workItem from="1733304853353" duration="12512000" />
+      <workItem from="1733996379738" duration="8612000" />
     </task>
+    <task id="LOCAL-00001" summary="Finalized one_shot modes, added utility classes for choosing files and lots of tweaks+fixes.">
+      <option name="closed" value="true" />
+      <created>1733996617067</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1733996617067</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Cleanup">
+      <option name="closed" value="true" />
+      <created>1733996796650</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1733996796650</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added description/intro text">
+      <option name="closed" value="true" />
+      <created>1734005653893</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1734005653893</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="VcsManagerConfiguration">
+    <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Finalized one_shot modes, added utility classes for choosing files and lots of tweaks+fixes." />
+    <MESSAGE value="Cleanup" />
+    <MESSAGE value="Added description/intro text" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added description/intro text" />
   </component>
 </project>
