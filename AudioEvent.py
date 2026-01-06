@@ -21,6 +21,9 @@ class AudioEvent:
             self._faded_audio_data = self.apply_fade(self._audio_data, self.should_fade_in, self.duration)
         return self._faded_audio_data
 
+    def apply_new_fade(self):
+        self._faded_audio_data = self.apply_fade(self._audio_data, self.should_fade_in, self.duration)
+
     @staticmethod
     def apply_fade(audio_data: list[float], should_fade_in: bool, duration: int) -> np.ndarray:
         if len(audio_data) > duration:

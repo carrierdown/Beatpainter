@@ -37,7 +37,7 @@ def shuffle_by_duration(source_clip: AudioClip,
 
 def interleave(source_clip: AudioClip,
                substitution_clips: list[AudioClip],
-               chunk_sizes: list[int]) -> list[AudioEvent]:
+               event_counts: list[int]) -> list[AudioEvent]:
     substitution_clips = [source_clip] + substitution_clips
     result = []
     lengths = [len(substitution_clip.events) for substitution_clip in substitution_clips]
@@ -57,13 +57,29 @@ def interleave(source_clip: AudioClip,
     i = 0
     while 1:
         start = event_indexes[index]
-        end = min(start + chunk_sizes[chunk_index], max_length)
+        end = min(start + event_counts[chunk_index], max_length)
         event_indexes[index] = end
         result += substitution_clips[index].events[start:end]
         index = (index + 1) % len(substitution_clips)
-        chunk_index = (chunk_index + 1) % len(chunk_sizes)
+        chunk_index = (chunk_index + 1) % len(event_counts)
         # if end >= max_length:
         if sum(event_indexes) >= max_length:
             break
+    return result
 
+def interleave_in_place(source_clip: AudioClip,
+                        substitution_clips: list[AudioClip],
+                        event_counts: list[int]) -> list[AudioEvent]:
+    substitution_clips = [source_clip] + substitution_clips
+    result = []
+    current_clip = 0
+    current_event_count_ix = 0
+    current_event_count = event_counts[current_event_count_ix]
+    for event in substitution_clips[0].events:
+        for i in range(current_event_count):
+            l = 0 # placeholder
+            # find nearest event
+            # add it
+        current_event_count_ix = (current_event_count_ix + 1) % len(event_counts)
+        current_event_count = event_counts[current_event_count_ix]
     return result

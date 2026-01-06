@@ -1,13 +1,12 @@
-import math
-import pathlib
-from typing import List
-
 import click
 import numpy as np
-from pedalboard_native.io import AudioFile
 import aubio
 import helpers
 import strategies
+import math
+import pathlib
+from typing import List
+from pedalboard_native.io import AudioFile
 from AudioEvent import AudioEvent
 from AudioClip import AudioClip
 from FileChooser import FileChooser
@@ -119,12 +118,13 @@ MAX_NUMBER_OF_SLICES = 100 # Max number of slices to extract from a single one s
                   ],
                   case_sensitive=False),
               help="Method for selecting source audio files")
-@click.option('--chunk-sizes', '-c',
+@click.option('--event-counts', '-c',
               multiple=True,
-              help="One or more values specifying how many events should be chunked together before processing occurs. "
-                   "Only used for interleave currently.",
+              help="One or more values specifying a sequence of counts. These are used differently depending on the chosen strategy:"
+                   "Interleave: Sequence of number of events to chunk together before interleaving starts"
+                   "ShuffleInPlace: Sequence reflects the number of events to return from the current clip before moving onto the next.",
               type=click.IntRange(1, 15),
-              default=[2])
+              default=[1])
 @click.option('--output-prefix', '-p',
               type=str,
               help="Prefix to add to output files, in addition to the sequence number",
@@ -155,7 +155,7 @@ def beat_shuffler(number_of_seqs: int,
                   onset_method: str,
                   file_selection_method: str,
                   # event_selection_method: str,
-                  chunk_sizes: List[int],
+                  event_counts: List[int],
                   output_prefix: str,
                   log_level: str) -> None:
     logger = Logger(-1 if log_level == "NONE" else 0 if log_level == "INFO" else 1 if log_level == "WARNING" else 2)
@@ -168,7 +168,7 @@ def beat_shuffler(number_of_seqs: int,
     substitution_path = pathlib.Path(substitution_dir) if substitution_dir else source_path
     substitution_files = get_audio_files(substitution_path, recurse_sub_dirs)
 
-    logger.log(f"Got the following for chunk {chunk_sizes}")
+    logger.log(f"Got the following for chunk {event_counts}")
 
     if not source_files:
         click.echo("No audio files were found in the supplied source directory")
@@ -179,7 +179,7 @@ def beat_shuffler(number_of_seqs: int,
 
     options = {
         "normalize_durations": normalize_durations,
-        "chunk_sizes": chunk_sizes
+        "event_counts": event_counts
     }
 
     for i in range(number_of_seqs):
@@ -203,7 +203,7 @@ def generate_sequence(strategy: str,
         return strategies.shuffle_by_duration(source_clip, substitution_clips,
                                               normalize_durations=options["normalize_durations"])
     if strategy == "Interleave":
-        return strategies.interleave(source_clip, substitution_clips, chunk_sizes=options["chunk_sizes"])
+        return strategies.interleave(source_clip, substitution_clips, event_counts=options["event_counts"])
     return []
 
 
