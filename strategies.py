@@ -72,14 +72,25 @@ def interleave_in_place(source_clip: AudioClip,
                         event_counts: list[int]) -> list[AudioEvent]:
     substitution_clips = [source_clip] + substitution_clips
     result = []
-    current_clip = 0
+    current_clip_ix = 0
     current_event_count_ix = 0
     current_event_count = event_counts[current_event_count_ix]
-    for event in substitution_clips[0].events:
-        for i in range(current_event_count):
-            l = 0 # placeholder
-            # find nearest event
-            # add it
-        current_event_count_ix = (current_event_count_ix + 1) % len(event_counts)
-        current_event_count = event_counts[current_event_count_ix]
+    for event_ix in range(len(substitution_clips[0].events)):
+        current_event = substitution_clips[0].events[event_ix]
+        current_clip = substitution_clips[current_clip_ix]
+        if current_clip_ix == 0:
+            result.append(current_event)
+        else:
+            event_start_times = [event.start for event in current_clip.events]
+            closest_ix = helpers.get_closest_index(event_start_times, current_event.start)
+            old_event = current_clip.events[closest_ix]
+            new_event = AudioEvent(current_event.start, current_event.duration, current_event.pitch, old_event.audio_data, 0, should_fade_in=False)
+            new_event.should_fade_in = False
+            result.append(new_event)
+        current_event_count -= 1
+        if current_event_count <= 0:
+            current_event_count_ix = (current_event_count_ix + 1) % len(event_counts)
+            current_event_count = event_counts[current_event_count_ix]
+            current_clip_ix = (current_clip_ix + 1) % len(substitution_clips)
+
     return result

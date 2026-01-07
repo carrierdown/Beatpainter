@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b59f4b36-95a8-4e66-a144-6b9dc52f4b63" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/BeatPainter.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/BeatPainter.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AudioEvent.py" beforeDir="false" afterPath="$PROJECT_DIR$/AudioEvent.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.run/Run_BeatPainter.run.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.run/Run_BeatPainter.run.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/strategies.py" beforeDir="false" afterPath="$PROJECT_DIR$/strategies.py" afterDir="false" />
     </list>
@@ -26,12 +24,12 @@
     &quot;assignee&quot;: &quot;carrierdown&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/carrierdown/Beatpainter.git&quot;,
-    &quot;accountId&quot;: &quot;1bdc8dc7-f4c2-48a4-8cc9-667a9cf8ff71&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/carrierdown/Beatpainter.git",
+    "accountId": "e3bd8ea4-7a6b-4b62-a219-2c89d08a4ee5"
   }
-}</component>
+}]]></component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
@@ -59,7 +57,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.Run_BeatPainte-Help">
+  <component name="RunManager" selected="Python.Run_BeatPainter">
     <configuration name="Run_BeatPainte-Help" type="PythonConfigurationType" factoryName="Python">
       <module name="rider.module" />
       <option name="ENV_FILES" value="" />
@@ -141,7 +139,14 @@
       <option name="project" value="LOCAL" />
       <updated>1734005653893</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL−00004" summary="Started interleave_in_place strategy">
+      <option name="closed" value="true" />
+      <created>1767737215059</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1767737215059</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -155,6 +160,7 @@
     <MESSAGE value="Finalized one_shot modes, added utility classes for choosing files and lots of tweaks+fixes." />
     <MESSAGE value="Cleanup" />
     <MESSAGE value="Added description/intro text" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added description/intro text" />
+    <MESSAGE value="Started interleave_in_place strategy" />
+    <option name="LAST_COMMIT_MESSAGE" value="Started interleave_in_place strategy" />
   </component>
 </project>

@@ -8,13 +8,14 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="SDK_NAME" value="Python 3.9 (BeatPainter)" />
+    <option name="SDK_NAME" value="Python 3.14 (Beatpainter) (2)" />
     <option name="WORKING_DIRECTORY" value="" />
     <option name="IS_MODULE_SDK" value="false" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
+    <option name="RUN_TOOL" value="" />
     <option name="SCRIPT_NAME" value="main.py" />
-    <option name="PARAMETERS" value="--output-prefix oldland10 --source-dir &quot;/Volumes/Soundland/Libraries/Basement drum loops&quot; --generation-depth 3 --substitution-dir &quot;/Volumes/Soundland/Libraries/Oldland collection/upland2files&quot; --seed 6387486 --output &quot;/Volumes/Soundland/Temp2&quot; --number-of-seqs 50" />
+    <option name="PARAMETERS" value="--output-prefix nd --strategy InterleaveInPlace --source-dir &quot;/Volumes/Soundland/Libraries/Basement drum loops&quot; --substitution-dir &quot;/Volumes/Soundland/90ssamples/90ssamplecds/East West - Tekno Industrial/East West - Tekno Industrial/VOLUME 003&quot; --generation-depth 3 -c 2 --seed 638746 --output &quot;/Volumes/Soundland/Temp2/new-devilry&quot; --number-of-seqs 10" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

@@ -68,6 +68,7 @@ MAX_NUMBER_OF_SLICES = 100 # Max number of slices to extract from a single one s
                   [
                       "Interleave",
                       "InterleavedShuffle",
+                      "InterleaveInPlace",
                       "ShuffleByDuration",
                       "ShuffleByPitch"
                   ],
@@ -204,6 +205,10 @@ def generate_sequence(strategy: str,
                                               normalize_durations=options["normalize_durations"])
     if strategy == "Interleave":
         return strategies.interleave(source_clip, substitution_clips, event_counts=options["event_counts"])
+
+    if strategy == "InterleaveInPlace":
+        return strategies.interleave_in_place(source_clip, substitution_clips, event_counts=options["event_counts"])
+
     return []
 
 
